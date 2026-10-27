@@ -2,7 +2,7 @@
 Hand this file to a fresh session. It contains the current state; nothing else needs re-explaining.
 
 ## WHAT THIS IS
-Rainmeter desktop suite at `C:\Users\might\Documents\Rainmeter\Skins\TwinCores`.
+Rainmeter desktop suite at `%USERPROFILE%\Documents\Rainmeter\Skins\TwinCores`.
 World: **Lumosea** ("a sea of light"). One 3840×1080 scene spans both monitors —
 dusk forest (source) → wave crest (transition) → deep water (depth). One light level,
 **LUMEN = LOAD**, drives the glow of the whole system: idle = candle, load = bonfire.
@@ -109,7 +109,7 @@ Rainmeter config-path stability.
 28. Detached background processes: `cmd /c start` fails silently and wscript/VBS is
     disabled on this Win11 build — use the python Popen DETACHED_PROCESS launcher
     pattern (`canvas-bridge-launch.py`).
-29. ffmpeg is installed portable at `C:\Users\might\ffmpeg\ffmpeg-9.0.2-essentials_build\bin`
+29. ffmpeg is installed portable at `%USERPROFILE%\ffmpeg\ffmpeg-9.0.2-essentials_build\bin`
     (banner/GIF tooling).
 
 ## SKILLS
