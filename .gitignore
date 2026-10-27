@@ -1,0 +1,16 @@
+# ---- private / machine-local data (never commit) ----
+@Resources/Data/*
+!@Resources/Data/.gitkeep
+@Resources/messages/*
+!@Resources/messages/.gitkeep
+*.tmp
+bridge.lock
+Thumbs.db
+Desktop.ini
+
+# local-only history: retired v1 skins/docs and design-process boards
+archive/
+
+# local-only design process artifacts (not part of the shipped suite)
+Design/assets/
+/Design/TwinCores-*.html

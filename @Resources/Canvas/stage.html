@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    cursor: default;
+  }
+  #wrap {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  video {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain; display: block;
+    opacity: 0; transition: opacity .6s ease;
+  }
+  video.on { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="wrap"><video id="v" autoplay muted loop playsinline></video></div>
+<script>
+  // TwinCores Watershed canvas stage. Polls the local bridge for the
+  // current track's Canvas URL and crossfades between videos.
+  // Click anywhere on the stage = play/pause through the player bridge.
+  var BRIDGE = 'http://127.0.0.1:8795/canvas';
+  var LOG = 'http://127.0.0.1:8795/log';
+  var cur = '';
+  var v = document.getElementById('v');
+
+  // Round 14 telemetry: report every video lifecycle event to the bridge.
+  function report(ev, extra) {
+    try {
+      var e = { src: 'stage', ev: ev };
+      if (extra) for (var k in extra) e[k] = extra[k];
+      if (v.error) e.err = v.error.code + '/' + (v.error.message || '');
+      e.netState = v.networkState; e.readyState = v.readyState;
+      fetch(LOG, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(e) }).catch(function () {});
+    } catch (x) {}
+  }
+  // log only anomalies + url changes - the loop cycle would flood the log
+  ['stalled', 'error', 'emptied', 'abort'].forEach(function (name) {
+    v.addEventListener(name, function () { report(name); });
+  });
+
+  function apply(url) {
+    if (url === cur) return;
+    report('apply', { url: url });
+    cur = url;
+    if (!url) {
+      v.classList.remove('on');
+      v.pause();
+      v.removeAttribute('src');
+      return;
+    }
+    v.classList.remove('on');
+    v.src = url;
+    v.onloadeddata = function () { v.classList.add('on'); };
+    v.play().catch(function () {});
+  }
+
+  function poll() {
+    fetch(BRIDGE, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j) apply(j.url || ''); })
+      .catch(function () {});
+  }
+
+  setInterval(poll, 2500);
+  poll();
+
+  document.addEventListener('click', function () {
+    try {
+      if (window.RainmeterAPI) {
+        RainmeterAPI.Bang('[!CommandMeasure MeasureTitle "PlayPause"]');
+      }
+    } catch (e) {}
+  });
+</script>
+</body>
+</html>
